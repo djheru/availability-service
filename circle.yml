@@ -1,0 +1,13 @@
+machine:
+  timezone: America/New_York
+  node:
+    version: 6.0.0
+
+dependencies:
+  override:
+    - npm install
+
+test:
+  override:
+    - mkdir -p $CIRCLE_TEST_REPORTS
+    - MOCHA_FILE=$CIRCLE_TEST_REPORTS/junit.xml `npm bin`/mocha --compilers js:babel-core/register --reporter=mocha-junit-reporter ./**/*.spec.js
