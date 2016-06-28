@@ -37,6 +37,41 @@
 <p>To eliminate or minimize un-booked sites, site owners utilize "Gap Rules" which enforce a maximum number of days unbooked between reservations. To illustrate, consider a site that has existing reservations spanning the 1st through the 3rd of the month and the 10th through the 15th. If a gap rule exists that states the maximum gap is 2 days, a request for a reservation spanning the 4th through the 7th would be denied, because the gap between the 7th and the 10th violates the rule.</p>
 
 <h2>
+<a id="high-level-approach" class="anchor" href="#high-level-approach" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>High-Level Approach</h2>
+
+<p>My approach for this challenge centered around implementing the solution in a manner that allowed easy reuse and high cohesion. I chose to create a module that would implement the functionality in either a server environment or in the browser. To accomplish this, I wrote the module as an ES2015 module, and then transpiled it using Babel and the <code>babel-plugin-add-module-exports</code> plugin to allow it to be used with <code>require()</code> or <code>import</code>. </p>
+
+<p>To support a more effective workflow, I set up a CI workflow using <a href="https://circleci.com/gh/djheru/availability-service">CircleCI</a> which automatically builds the module and runs the tests each time a commit is pushed to master. The badge at the top of this page illustrates the current build status. This process could be improved by enforcing a rule that the CI build must pass successfully before commits are allowed to be merged into the master branch.</p>
+
+<p>To make it easier for other applications to use this module as a dependency, I've published it on <a href="https://www.npmjs.com/package/availability-service">npm</a>. This makes it easy for other applications to easily include it using <code>npm install availability-service</code> and to require that specific versions be used. Details of the example API are provided below.</p>
+
+<p><strong>The processing of the reservation list to determine availability follows four main steps:</strong>
+1. Remove any reservation objects that contain a reservation which overlaps the requested date range
+2. Remove all reservation objects that relate to a site that has an overlapping reservation (in a different reservation object)
+3. Parse the remaining reservations into a format like: </p>
+
+<pre><code>{ campsiteId: 1, reservations: [ [startDate1, endDate1], [startDate2, endDate2], [startDate3, endDate3] ] }
+</code></pre>
+
+<ol>
+<li>Calculate the gap between each reservation in the reservations array above, and calculate if the requested range will fit without violating the gap rules.</li>
+</ol>
+
+<h3>
+<a id="assumptions" class="anchor" href="#assumptions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Assumptions</h3>
+
+<p>When determining how to solve this problem, I made the following assumptions:
+1. The gap rule value was to be used in an inclusive comparison. In other words, if the gap rule is 2, that means that the difference between the end of one reservation and the beginning of another must be <em>less than or equal to 2</em>, rather than <em>less than 2</em>.
+2. If there's more than one gap rule, the smallest rule takes precedence.
+3. The gap rules before and after the requested range must be calculated.
+4. If there's no reservation before a requested range or there's not one after it, there's no need to calculate the gap rule for that span.</p>
+
+<h3>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h3>
+
+<p>To speed development time, I used the popular <a href="http://momentjs.com/">moment.js</a> library to extend the <code>Date</code> object, and the <a href="https://github.com/gf3/moment-range">moment-range</a> library to provide additional methods for calculating date ranges.</p>
+
+<h2>
 <a id="building-and-running-tests" class="anchor" href="#building-and-running-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building and Running Tests</h2>
 
 <ul>
@@ -47,6 +82,11 @@
 <li>
 <code>npm run test:watch</code> - re-run tests as you make changes</li>
 </ul>
+
+<h2>
+<a id="example-implementation" class="anchor" href="#example-implementation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example Implementation</h2>
+
+<p>To provide an example implementation, I created a Loopback API that </p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/djheru/availability-service">Availability Service</a> is maintained by <a href="https://github.com/djheru">djheru</a>.</span>
