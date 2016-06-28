@@ -2,6 +2,9 @@
 
 # Availability Service
 
+## Details
+**[GitHub Page](https://djheru.github.io/availability-service/)**
+
 ## Scripts
 
 * `npm run build` - produces production version of your library under the `lib` folder
