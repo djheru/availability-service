@@ -46,32 +46,29 @@
 <p>To make it easier for other applications to use this module as a dependency, I've published it on <a href="https://www.npmjs.com/package/availability-service">npm</a>. This makes it easy for other applications to easily include it using <code>npm install availability-service</code> and to require that specific versions be used. Details of the example API are provided below.</p>
 
 <p><strong>The processing of the reservation list to determine availability follows four main steps:</strong>
-1. Remove any reservation objects that contain a reservation which overlaps the requested date range
-2. Remove all reservation objects that relate to a site that has an overlapping reservation (in a different reservation object)
-3. Parse the remaining reservations into a format like: </p>
-
-<pre><code>{ 
-  campsiteId: 1, 
-  reservations: [ 
-    [startDate1, endDate1], 
-    [startDate2, endDate2], 
-    [startDate3, endDate3] 
-  ] 
-}
-</code></pre>
-
-<ol>
-<li>Calculate the gap between each reservation in the reservations array above, and calculate if the requested range will fit without violating the gap rules.</li>
-</ol>
+1 Remove any reservation objects that contain a reservation which overlaps the requested date range
+2 Remove all reservation objects that relate to a site that has an overlapping reservation (in a different reservation object)
+3 Parse the remaining reservations into a format like: 
+    <code>
+    { 
+      campsiteId: 1, 
+      reservations: [ 
+        [startDate1, endDate1], 
+        [startDate2, endDate2], 
+        [startDate3, endDate3] 
+      ] 
+    }
+</code>
+4 Calculate the gap between each reservation in the reservations array above, and calculate if the requested range will fit without violating the gap rules.</p>
 
 <h3>
 <a id="assumptions" class="anchor" href="#assumptions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Assumptions</h3>
 
 <p>When determining how to solve this problem, I made the following assumptions:
-1. The gap rule value was to be used in an inclusive comparison. In other words, if the gap rule is 2, that means that the difference between the end of one reservation and the beginning of another must be <em>less than or equal to 2</em>, rather than <em>less than 2</em>.
-2. If there's more than one gap rule, the smallest rule takes precedence.
-3. The gap rules before and after the requested range must be calculated.
-4. If there's no reservation before a requested range or there's not one after it, there's no need to calculate the gap rule for that span.</p>
+1 The gap rule value was to be used in an inclusive comparison. In other words, if the gap rule is 2, that means that the difference between the end of one reservation and the beginning of another must be <em>less than or equal to 2</em>, rather than <em>less than 2</em>.
+2 If there's more than one gap rule, the smallest rule takes precedence.
+3 The gap rules before and after the requested range must be calculated.
+4 If there's no reservation before a requested range or there's not one after it, there's no need to calculate the gap rule for that span.</p>
 
 <h3>
 <a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h3>
@@ -96,25 +93,28 @@
 <p>To provide an example implementation, I created a Loopback API that exposes a route, <code>/reservations/availability</code>. This route is available for <code>POST</code> requests only, and requires two params: <code>startDate</code> and <code>endDate</code>. It returns a JSON collection of campsite objects that have availability for that date range. </p>
 
 <p>To run the api, simply follow these steps:
-1. Clone or download a copy of <a href="https://github.com/djheru/campspot-api">campspot-api</a>
-2. Edit <code>./server/datasources.json</code> and enter your credentials for a MySQL database and a database that you'd like to use for testing
-3. Run <code>npm install</code> to install the dependencies (including this one, availability-service)
-4. Run <code>node .</code> to start the server in a terminal session. This will create a database migration with the data from the provided JSON document (located in the file <code>./server/boot/test-case.js</code>)
-5. Navigate to http://localhost:3000/explorer/#!/Reservation/Reservation_availability and enter the dates '2016-06-07' and '2016-06-10' in the provided text input fields, then submit.
-6. Inspect the response body. You should see the following JSON object:
-```{
-  "startDate": "2016-06-07",
-  "endDate": "2016-06-10",
-  "available_sites": [
-    { "name": "Daniel Boone Bungalow", "id": 5 },
-    { "name": "Teddy Rosevelt Tent Site", "id": 6 },
-    { "name": "Bear Grylls Cozy Cave", "id": 8 },
-    { "name": "Wyatt Earp Corral", "id": 9 }
-  ]
-}</p>
+1 Clone or download a copy of <a href="https://github.com/djheru/campspot-api">campspot-api</a>
+2 Edit <code>./server/datasources.json</code> and enter your credentials for a MySQL database and a database that you'd like to use for testing
+3 Run <code>npm install</code> to install the dependencies (including this one, availability-service)
+4 Run <code>node .</code> to start the server in a terminal session. This will create a database migration with the data from the provided JSON document (located in the file <code>./server/boot/test-case.js</code>)
+5 Navigate to http://localhost:3000/explorer/#!/Reservation/Reservation_availability and enter the dates '2016-06-07' and '2016-06-10' in the provided text input fields, then submit.
+6 Inspect the response body. You should see the following JSON object:
+    <code>{
+      "startDate": "2016-06-07",
+      "endDate": "2016-06-10",
+      "available_sites": [
+        { "name": "Daniel Boone Bungalow", "id": 5 },
+        { "name": "Teddy Rosevelt Tent Site", "id": 6 },
+        { "name": "Bear Grylls Cozy Cave", "id": 8 },
+        { "name": "Wyatt Earp Corral", "id": 9 }
+      ]
+    }
+</code></p>
 
-<pre><code>
-</code></pre>
+<h2>
+<a id="conclusion" class="anchor" href="#conclusion" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion</h2>
+
+<p>Thank you again for the opportunity. Please feel free to contact me if you have any additional questions or comments.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/djheru/availability-service">Availability Service</a> is maintained by <a href="https://github.com/djheru">djheru</a>.</span>
